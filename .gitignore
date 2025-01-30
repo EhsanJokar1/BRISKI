@@ -1,0 +1,8 @@
+
+hardware/simul/verilator/**
+hardware/vivado-impl/vivado-runs/**
+software/runs/**
+
+!hardware/simul/verilator/Makefile
+!hardware/simul/verilator/RISCV_core_tb.cpp
+!hardware/simul/verilator/simulation_model/BRISKI_simulator.cpp
