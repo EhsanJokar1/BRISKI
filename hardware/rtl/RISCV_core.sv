@@ -29,6 +29,7 @@ module RISCV_core #(
     output logic [31:0] o_dmem_write_data,
     output logic [3:0] o_dmem_write_enable,
     input logic [31:0] i_dmem_read_data,
+    output logic o_dmem_read_enable,
     // Regfile signals for debug
     output logic [4:0] regfile_wr_addr,
     output logic [31:0] regfile_wr_data,
@@ -1076,6 +1077,19 @@ module RISCV_core #(
       .i_signal(dmem_write_enable_post),
       .o_pipelined_signal(o_dmem_write_enable)
   );
+
+    // Pipeline Registers
+  pipe_sl #(
+      //.N(7),
+      .N($countones(DECODE_STAGES) + $countones(EXECUTE_STAGES) + $countones({MEMORY_STAGES[0],MEMORY_STAGES[1],MEMORY_STAGES[2]})),
+      .WithReset(1)
+  ) dmem_read_enable_inst (
+      .reset(reset),
+      .clk(clk),
+      .i_signal(load),
+      .o_pipelined_signal(o_dmem_read_enable)
+  );
+
   //----------------------------- MEMORY stage 3 --------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------
   /*pipe_vec #(

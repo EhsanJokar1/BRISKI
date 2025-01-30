@@ -187,6 +187,7 @@ int main(int argc, char **argv, char **env) {
     RegFile *regfile= new RegFile();
     static uint32_t ram_addr = 0;
     static uint32_t rom_addr = 0;
+    static bool ram_read_enable;
 
     top->reset = 0;
     top->clk = 0;
@@ -211,9 +212,15 @@ int main(int argc, char **argv, char **env) {
 	      //if (top->o_dmem_addr==255) std::cout << "bingo" << std::endl;
 	      ram_addr = top->o_dmem_addr;
 	      rom_addr = top->o_ROM_addr;
+          ram_read_enable = top->o_dmem_read_enable;
 	    } else {
               top->i_ROM_instruction = bram->fetchinstr(rom_addr);
-              top->i_dmem_read_data = bram->read(ram_addr);
+              if (ram_read_enable){
+                top->i_dmem_read_data = bram->read(ram_addr);
+              } else {
+                top->i_dmem_read_data = 0;
+              }
+
 	    }
             //toggle clock
 	    top->clk = !top->clk;
@@ -228,9 +235,14 @@ int main(int argc, char **argv, char **env) {
               bram->write(top->o_dmem_addr, top->o_dmem_write_data, top->o_dmem_write_enable);
 	      ram_addr = top->o_dmem_addr;
 	      rom_addr = top->o_ROM_addr;
+          ram_read_enable = top->o_dmem_read_enable;
 	    } else {
               top->i_ROM_instruction = bram->fetchinstr(rom_addr);
-              top->i_dmem_read_data = bram->read(ram_addr);
+              if (ram_read_enable){
+                top->i_dmem_read_data = bram->read(ram_addr);
+              } else {
+                top->i_dmem_read_data = 0;
+              }
 	    }
 	      top->clk = !top->clk;
 	      top->eval();
