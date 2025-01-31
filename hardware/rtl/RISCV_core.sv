@@ -24,6 +24,8 @@ module RISCV_core #(
     // Instruction memory signals
     input logic [31:0] i_ROM_instruction,
     output logic [MEM_ADDR_WIDTH-1:0] o_ROM_addr,
+    output logic [$clog2(NUM_THREADS)-1:0] thread_index_inst,
+
     // Data memory signals
     output logic [MM_ADDR_WIDTH-1:0] o_dmem_addr,
     output logic [31:0] o_dmem_write_data,
@@ -322,10 +324,12 @@ module RISCV_core #(
   //----------------------------------------------------------------------------------
   assign o_ROM_addr  = pcreg[MEM_ADDR_WIDTH+1:2];
 
+  assign thread_index_inst = thread_index_counter;
+
   //-------------------------------- FETCH stage 2 ------------------------------------------------------------------
   //-----------------------------------------------------------------------------------------------------------------
 
-  assign instruction = (start_reg == 1'b0) ? 32'b0 : i_ROM_instruction;
+  assign instruction = /*(start_reg == 1'b0) ? 32'b0 : */ i_ROM_instruction;
 
   //=================================================================================================================
   // ---------------------------  DECODE stages components  ---------------------------------------------------------
@@ -338,7 +342,7 @@ module RISCV_core #(
   //--------------------------------
   pipe_vec #(
       .DWIDTH(32),
-      .N($countones({FETCH_STAGES[1], FETCH_STAGES[2], FETCH_STAGES[3], FETCH_STAGES[4]})),
+      .N($countones({FETCH_STAGES[3], FETCH_STAGES[4]})),
       .WithReset(true)
   ) instr_reg_inst (
       .reset(reset),
@@ -1106,7 +1110,7 @@ module RISCV_core #(
   //=================================================================================================================
   pipe_vec #(
       .DWIDTH(32),
-      .N($countones({MEMORY_STAGES[4], WRITEBACK_STAGES[0]})),
+      .N($countones(0)),
       .WithReset(0)
   ) dmem_inst (
       .reset(reset),

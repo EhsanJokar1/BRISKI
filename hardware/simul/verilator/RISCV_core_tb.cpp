@@ -187,13 +187,22 @@ int main(int argc, char **argv, char **env) {
     RegFile *regfile= new RegFile();
     static uint32_t ram_addr = 0;
     static uint32_t rom_addr = 0;
-    static bool ram_read_enable;
+    static bool ram_read_enable, ram_read_enable_reg;
 
     top->reset = 0;
     top->clk = 0;
 
     top->i_dmem_read_data = 0;
     top->i_ROM_instruction = 0;
+
+    uint32_t instr_stage1 = 0;  // One-stage delay for instruction
+    uint32_t instr_stage2 = 0;  // two-stage delay for instruction
+    uint32_t data_stage1 = 0;   // One-stage delay for data
+
+    uint32_t dmem_addr = 0;
+    uint32_t dmem_write_data = 0;
+    uint32_t dmem_write_enable = 0;
+    uint32_t ram_addr_reg = 0;
 
     while (!Verilated::gotFinish()) {
 
@@ -208,17 +217,30 @@ int main(int argc, char **argv, char **env) {
 	if (main_time < MAX_SIMTIME && top->i_ROM_instruction!=0x00000073){
             if (top->clk == 0) {
 	      regfile->writeback(top->thread_index_wb, top->regfile_wr_addr, top->regfile_wr_data, top->regfile_wr_en);
-              bram->write(top->o_dmem_addr, top->o_dmem_write_data, top->o_dmem_write_enable);
+              bram->write(dmem_addr, dmem_write_data, dmem_write_enable);
 	      //if (top->o_dmem_addr==255) std::cout << "bingo" << std::endl;
+
+          ram_addr_reg = ram_addr;
 	      ram_addr = top->o_dmem_addr;
 	      rom_addr = top->o_ROM_addr;
+          ram_read_enable_reg = ram_read_enable;
           ram_read_enable = top->o_dmem_read_enable;
+
+          dmem_addr = top->o_dmem_addr;
+          dmem_write_data = top->o_dmem_write_data;
+          dmem_write_enable = top->o_dmem_write_enable;
+
 	    } else {
-              top->i_ROM_instruction = bram->fetchinstr(rom_addr);
-              if (ram_read_enable){
-                top->i_dmem_read_data = bram->read(ram_addr);
+
+              top->i_ROM_instruction = instr_stage1;
+              instr_stage1  = instr_stage2;
+              instr_stage2 = bram->fetchinstr(rom_addr);
+
+              top->i_dmem_read_data = data_stage1;
+              if (ram_read_enable_reg){
+                data_stage1 = bram->read(ram_addr_reg);
               } else {
-                top->i_dmem_read_data = 0;
+                data_stage1 = 0;
               }
 
 	    }
@@ -233,15 +255,22 @@ int main(int argc, char **argv, char **env) {
             if (top->clk == 0) {
 	      regfile->writeback(top->thread_index_wb, top->regfile_wr_addr, top->regfile_wr_data, top->regfile_wr_en);
               bram->write(top->o_dmem_addr, top->o_dmem_write_data, top->o_dmem_write_enable);
+
+          ram_addr_reg = ram_addr;
 	      ram_addr = top->o_dmem_addr;
 	      rom_addr = top->o_ROM_addr;
+          ram_read_enable_reg = ram_read_enable;
           ram_read_enable = top->o_dmem_read_enable;
 	    } else {
-              top->i_ROM_instruction = bram->fetchinstr(rom_addr);
-              if (ram_read_enable){
-                top->i_dmem_read_data = bram->read(ram_addr);
+              top->i_ROM_instruction = instr_stage1;
+              instr_stage1  = instr_stage2;
+              instr_stage2 = bram->fetchinstr(rom_addr);
+
+              top->i_dmem_read_data = data_stage1;
+              if (ram_read_enable_reg){
+                data_stage1 = bram->read(ram_addr_reg);
               } else {
-                top->i_dmem_read_data = 0;
+                data_stage1 = 0;
               }
 	    }
 	      top->clk = !top->clk;
