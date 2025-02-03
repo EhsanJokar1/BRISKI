@@ -26,7 +26,7 @@ def parse_elf_dump(filename):
         elif 'Contents of section .data:' in line:
             current_section = '.data'
             last_address = current_address
-            current_address = 0 
+            current_address = 0
             section_started = True
             first_line = True
             continue
@@ -84,14 +84,13 @@ def swap_endianness(hex_str):
     if len(hex_str) != 8 or not all(c in '0123456789abcdefABCDEF' for c in hex_str):
         print(hex_str)
         raise ValueError("Invalid hexadecimal string")
-    
+
     # Split the hex string into 2-byte chunks, reverse the chunks, and reassemble
     swapped = ''.join(reversed([hex_str[i:i+2] for i in range(0, 8, 2)]))
     return swapped
 
-def write_inst_file(sections, output_filename):
+def write_inst_file(sections, output_filename, max_lines):
     with open(output_filename, 'w') as file:
-        max_lines = 1024
         lines_written = 0
 
         # Collect all words in a single list
@@ -115,9 +114,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Convert ELF disassembly to .inst file.")
     parser.add_argument('input_file', help="The input ELF disassembly file.")
     parser.add_argument('output_file', help="The output .inst file.")
+    parser.add_argument('max_lines', type=int, help="size of inst/data memory")
 
     args = parser.parse_args()
 
     sections = parse_elf_dump(args.input_file)
-    write_inst_file(sections, args.output_file)
-
+    write_inst_file(sections, args.output_file, args.max_lines)

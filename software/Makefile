@@ -1,14 +1,14 @@
 PROG?=test_bitwise
 CPROG?=main
 RUN_DIR?=runs
-NUM_THREADS?=16
-MEMORY_SIZE?=1024
+NUM_THREADS?=32
+MEMORY_SIZE?=2048
 
 hex_gen: clean compile_link objdump_elf
 	python3 hexgen.py $(RUN_DIR)/$(PROG).asm $(RUN_DIR)/$(PROG).inst
 
 c_hex_gen: clean compile_link_c objdump_c_elf
-	python3 hexgen.py $(RUN_DIR)/$(CPROG).asm $(RUN_DIR)/$(CPROG).inst
+	python3 hexgen.py $(RUN_DIR)/$(CPROG).asm $(RUN_DIR)/$(CPROG).inst $(MEMORY_SIZE)
 
 all: clean compile bingen objdump format
 
