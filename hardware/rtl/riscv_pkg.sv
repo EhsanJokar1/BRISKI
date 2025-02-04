@@ -80,7 +80,7 @@ package riscv_pkg;
   // REG FILE BRAM
   //===========================
   `ifndef ENABLE_BRAM_REGFILE
-    `define ENABLE_BRAM_REGFILE false  // true for BRAM-based (block), false for LUT-based (distributed)
+    `define ENABLE_BRAM_REGFILE true  // true for BRAM-based (block), false for LUT-based (distributed)
   `endif
 
   //===========================
