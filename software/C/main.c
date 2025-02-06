@@ -91,10 +91,20 @@ void main() {
         }
    }
 
-    // Atomically increment the barrier variable
-    atomic_increment(&barrier_var);
+    // for (int k = 0; k < ARRAY_SIZE / 2; k++) {
+    //     int temp = my_data[k];
+    //     my_data[k] = my_data[ARRAY_SIZE - 1 - k];
+    //     my_data[ARRAY_SIZE - 1 - k] = temp;
+    // }
 
-    // Wait until all threads have incremented the barrier variable
-    while (barrier_var != NUM_THREADS);
-    __asm__ volatile ("ecall");
+    while(1){}
+
+    // // Atomically increment the barrier variable
+    // atomic_increment(&barrier_var);
+
+    // // Wait until all threads have incremented the barrier variable
+    // while (barrier_var != NUM_THREADS);
+    // __asm__ volatile ("ecall");
+
+
 }
