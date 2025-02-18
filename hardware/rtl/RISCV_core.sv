@@ -1220,7 +1220,7 @@ module RISCV_core #(
 
   // Load Unit
   //(* keep_hierarchy = "yes" *)
-  load_unit #(.PIPE_STAGE0(WRITEBACK_STAGES[1]), .PIPE_STAGE1(WRITEBACK_STAGES[2])) load_unit_inst (
+  load_unit #(.PIPE_STAGE0(0), .PIPE_STAGE1(WRITEBACK_STAGES[2])) load_unit_inst (
       .clk(clk),
       .i_load(load_pipe),
       //.i_addr(alu_result_reg_wb[1:0]),

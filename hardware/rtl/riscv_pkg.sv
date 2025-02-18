@@ -20,7 +20,7 @@ package riscv_pkg;
 `endif
 
 `ifndef NUM_PIPE_STAGES
-  `define NUM_PIPE_STAGES 18
+  `define NUM_PIPE_STAGES 19
 `endif
 
 `ifndef MEMORY_SIZE
@@ -244,7 +244,7 @@ package riscv_pkg;
 			  pipeline_cfg.writeback_stages = 5'b11100;
 		  end
 
-		  18: begin
+		  19: begin
 			//pipeline_cfg.fetch_stages     = 5'b00011;
 			//pipeline_cfg.decode_stages    = 5'b01010;
 			//pipeline_cfg.execute_stages   = 5'b11111;
@@ -254,7 +254,7 @@ package riscv_pkg;
 			pipeline_cfg.decode_stages    = 5'b11100;
 			pipeline_cfg.execute_stages   = 5'b11110;
 			pipeline_cfg.memory_stages    = 5'b11101;
-			pipeline_cfg.writeback_stages = 5'b11101;
+			pipeline_cfg.writeback_stages = 5'b11111;
 		end
 
 		  default : begin
