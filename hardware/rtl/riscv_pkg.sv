@@ -61,7 +61,7 @@ package riscv_pkg;
   parameter logic [ALUOP_WIDTH-1:0] SRA_OP = 4'b0111;
 
   `ifndef ENABLE_ALU_DSP
-    `define ENABLE_ALU_DSP true  //enables using dsp within alu to reduce LUT utilization
+    `define ENABLE_ALU_DSP false  //enables using dsp within alu to reduce LUT utilization
   `endif
 
   `ifndef ENABLE_UNIFIED_BARREL_SHIFTER
@@ -104,7 +104,7 @@ package riscv_pkg;
   endfunction
 
   // Reverse bits ===========================
-  function logic [31:0] reverse_bits(input logic [31:0] in);
+  function automatic logic [31:0] reverse_bits(input logic [31:0] in);
     logic [31:0] out;
     for (int i = 0; i < 32; i++) begin
         out[i] = in[31-i];
