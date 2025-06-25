@@ -24,7 +24,7 @@ package riscv_pkg;
 `endif
 
 `ifndef MEMORY_SIZE
-  `define MEMORY_SIZE 2048
+  `define MEMORY_SIZE 4096
 `endif
 
   parameter int DWIDTH = 32;
