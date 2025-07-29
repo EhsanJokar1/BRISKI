@@ -28,15 +28,13 @@ module alu #(
   logic [DWIDTH-1:0] result_srl_sra;
   logic [4:0] shamt;
   logic [DWIDTH:0] temp;
-  logic [DWIDTH-1:0] mask;
 
   logic [DWIDTH-1:0] op2_negated_or_not; // negate second operand when aluop is sub
 
   logic [DWIDTH-1:0] swapped_op1;
-  logic [DWIDTH-1:0] reswapped_op1;
   logic [DWIDTH-1:0] temp_trim;
 //-----------------------------------------------------------------------
-//   FIRST PIPE STAGE 
+//   FIRST PIPE STAGE
 //-----------------------------------------------------------------------
   if (PIPE_STAGE0 == 1) begin : first_stage_registered
   //-------------------------------------------------
@@ -46,13 +44,13 @@ module alu #(
       op1 <= i_op1;
       op2 <= i_op2;
       aluop <= i_aluop;
-    end 
+    end
 
     if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : first_registered_left_right_shifts_shared_logic
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       always_ff @(posedge clk) begin
         swapped_op1 <= (i_aluop == SLL_OP)? reverse_bits(i_op1) : i_op1;
-      end 
+      end
     end
 
   end else begin : first_stage_not_registered
@@ -72,7 +70,7 @@ module alu #(
 
 
 //-----------------------------------------------------------------------
-//   SECOND PIPE STAGE 
+//   SECOND PIPE STAGE
 //-----------------------------------------------------------------------
   if (PIPE_STAGE1 == 1) begin : second_stage_registered
   //-------------------------------------------------
@@ -136,21 +134,20 @@ module alu #(
 
   end
 //-----------------------------------------------------------------------
-//   THIRD PIPE STAGE 
+//   THIRD PIPE STAGE
 //-----------------------------------------------------------------------
   if (PIPE_STAGE2 == 1) begin : third_stage_registered
   //-------------------------------------------------
-    always_ff @(posedge clk) 
+    always_ff @(posedge clk)
          //o_result <= result_add ^ result_sll ^ result_xor ^ result_srl_sra ^ result_or ^ result_and ^ result_pass;
          o_result <= result_add | result_sll | result_xor | result_srl_sra | result_or | result_and | result_pass;
 
   end else begin : third_stage_not_registered
   //-------------------------------------------------
-    always_comb 
+    always_comb
          //o_result = result_add ^ result_sll ^ result_xor ^ result_srl_sra ^ result_or ^ result_and ^ result_pass;
          o_result = result_add | result_sll | result_xor | result_srl_sra | result_or | result_and | result_pass;
 
   end
 
 endmodule
-

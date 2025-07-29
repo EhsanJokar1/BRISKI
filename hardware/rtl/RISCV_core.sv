@@ -183,7 +183,6 @@ module RISCV_core #(
   logic [31:0] pcplusfour;
   logic [31:0] pcreg_pipe;
   logic [31:0] pcreg_pipe2;
-  logic [31:0] pcreg_pipe3;
 
   //=================================================================================================================
   // memory stage signals
@@ -872,15 +871,6 @@ module RISCV_core #(
       .o_pipelined_signal(pcreg_pipe2)
   );
 
-  /*pipe_vec #(
-      .DWIDTH(32),
-      .N(EXECUTE_STAGES[2])
-  ) pcreg_pipe3_inst (
-      .reset(reset),
-      .clk(clk),
-      .i_signal(pcreg_pipe2),
-      .o_pipelined_signal(pcreg_pipe3)
-  );*/
   // Next PC address (pc+4)
   Adder32 Adder32_inst (
       .i_op1(pcreg_pipe2),
