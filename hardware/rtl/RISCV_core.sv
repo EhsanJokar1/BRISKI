@@ -2,15 +2,15 @@
 `include "riscv_pkg.sv"
 module RISCV_core #(
     //main parameters
-    parameter NUM_PIPE_STAGES  = `NUM_PIPE_STAGES,
-    parameter NUM_THREADS      = `NUM_THREADS,
-    parameter MEM_ADDR_WIDTH     = riscv_pkg::ADDR_WIDTH,
+    parameter NUM_PIPE_STAGES  = 19,
+    parameter NUM_THREADS      = 32,
+    parameter MEM_ADDR_WIDTH     = 12,
     parameter MM_ADDR_WIDTH = MEM_ADDR_WIDTH + 4,
     // RF parameter
-    parameter bool ENABLE_BRAM_REGFILE = `ENABLE_BRAM_REGFILE,
+    parameter bool ENABLE_BRAM_REGFILE = true,
     // ALU parameter
-    parameter bool ENABLE_ALU_DSP = `ENABLE_ALU_DSP ,
-    parameter bool ENABLE_UNIFIED_BARREL_SHIFTER = `ENABLE_UNIFIED_BARREL_SHIFTER,
+    parameter bool ENABLE_ALU_DSP = false ,
+    parameter bool ENABLE_UNIFIED_BARREL_SHIFTER = true,
     // Generic parameters
     parameter IDcluster        = 0,
     parameter IDrow            = 0,
@@ -41,7 +41,7 @@ module RISCV_core #(
     output logic [$clog2(NUM_THREADS)-1:0] thread_index_wrmem
 );
 
-  localparam pipeline_config_t pipeline_config = get_pipeline_config(`NUM_PIPE_STAGES);
+  localparam pipeline_config_t pipeline_config = get_pipeline_config(NUM_PIPE_STAGES);
   localparam bit [4:0] FETCH_STAGES     = pipeline_config.fetch_stages;
   localparam bit [4:0] DECODE_STAGES    = pipeline_config.decode_stages;
   localparam bit [4:0] EXECUTE_STAGES   = pipeline_config.execute_stages;

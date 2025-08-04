@@ -1,47 +1,31 @@
 `ifndef PKG_IMP_DONE // if the flag is not yet set
 `define PKG_IMP_DONE // set the flag
 
+// Import our project-specific configuration package
+import BRISKI_pkg::*;
+
 package riscv_pkg;
 
   typedef enum {
-    true,
-    false
+	false,
+	true
   } bool;
-  //===========================
-  // General params
-  //===========================
-
-`ifndef MMCM_OUT_FREQ_MHZ
-  `define MMCM_OUT_FREQ_MHZ 300
-`endif
-
-`ifndef NUM_THREADS
-  `define NUM_THREADS 32
-`endif
-
-`ifndef NUM_PIPE_STAGES
-  `define NUM_PIPE_STAGES 19
-`endif
-
-`ifndef MEMORY_SIZE
-  `define MEMORY_SIZE 4096
-`endif
 
   parameter int DWIDTH = 32;
   parameter int IWIDTH = 32;
   parameter int REGFILE_SIZE = 32;
-  parameter [$clog2(`MEMORY_SIZE)-1:0] STARTUP_ADDR = 0;
+  parameter [$clog2(BRISKI_pkg::BRISKI_MEM_DEPTH)-1:0] STARTUP_ADDR = 0;
 
 
   //===========================
   // Pipeline depth params
   //===========================
   typedef struct packed {
-    bit [4:0] fetch_stages;
-    bit [4:0] decode_stages;
-    bit [4:0] execute_stages;
-    bit [4:0] memory_stages;
-    bit [4:0] writeback_stages;
+	bit [4:0] fetch_stages;
+	bit [4:0] decode_stages;
+	bit [4:0] execute_stages;
+	bit [4:0] memory_stages;
+	bit [4:0] writeback_stages;
   } pipeline_config_t;
 
   //===========================
@@ -60,18 +44,14 @@ package riscv_pkg;
   parameter logic [ALUOP_WIDTH-1:0] SRL_OP = 4'b0110;
   parameter logic [ALUOP_WIDTH-1:0] SRA_OP = 4'b0111;
 
-  `ifndef ENABLE_ALU_DSP
-    `define ENABLE_ALU_DSP false  //enables using dsp within alu to reduce LUT utilization
-  `endif
 
-  `ifndef ENABLE_UNIFIED_BARREL_SHIFTER
-    `define ENABLE_UNIFIED_BARREL_SHIFTER true  // true for BRAM-based (block), false for LUT-based (distributed)
-  `endif
+
+
   //===========================
   // DATA+INSTR BRAM specific params
   //===========================
-  parameter int SIZE = `MEMORY_SIZE;
-  parameter int ADDR_WIDTH = $clog2(`MEMORY_SIZE);
+  parameter int SIZE = BRISKI_pkg::BRISKI_MEM_DEPTH;
+  parameter int ADDR_WIDTH = $clog2(BRISKI_pkg::BRISKI_MEM_DEPTH);
   parameter int COL_WIDTH = 8;
   parameter int NB_COL = 4;
   //typedef logic [NB_COL * COL_WIDTH - 1:0] ram_type[SIZE-1:0];
@@ -79,9 +59,8 @@ package riscv_pkg;
   //===========================
   // REG FILE BRAM
   //===========================
-  `ifndef ENABLE_BRAM_REGFILE
-    `define ENABLE_BRAM_REGFILE true  // true for BRAM-based (block), false for LUT-based (distributed)
-  `endif
+
+
 
   //===========================
   // UTILITY types
@@ -95,21 +74,21 @@ package riscv_pkg;
 
   // clog2 =========================
   function int clog2(int A);
-    return $clog2(A);
+	return $clog2(A);
   endfunction
 
   // MAX ===========================
   function int max(int Lh, int Rh);
-    return (Lh > Rh) ? Lh : Rh;
+	return (Lh > Rh) ? Lh : Rh;
   endfunction
 
   // Reverse bits ===========================
   function automatic logic [31:0] reverse_bits(input logic [31:0] in);
-    logic [31:0] out;
-    for (int i = 0; i < 32; i++) begin
-        out[i] = in[31-i];
-    end
-    return out;
+	logic [31:0] out;
+	for (int i = 0; i < 32; i++) begin
+		out[i] = in[31-i];
+	end
+	return out;
   endfunction
 
 
@@ -266,7 +245,7 @@ package riscv_pkg;
 		  end
 	  endcase
 
-    return pipeline_cfg;
+	return pipeline_cfg;
   endfunction
 
 endpackage
