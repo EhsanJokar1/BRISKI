@@ -2,7 +2,7 @@
 
 `include "riscv_pkg.sv"
 module alu_dsp #(
-    parameter bool ENABLE_UNIFIED_BARREL_SHIFTER = true,
+    parameter bit ENABLE_UNIFIED_BARREL_SHIFTER = 1,
     parameter ALUOP_WIDTH = 4,
     DWIDTH = 32,
     PIPE_STAGE0 = 0,
@@ -39,10 +39,10 @@ module alu_dsp #(
   logic [DWIDTH-1:0] swapped_op1;
   logic [DWIDTH-1:0] temp_trim;
    //-----------------------------------------------------------------------
-  //   Barrel Shifter Path 
+  //   Barrel Shifter Path
   //-----------------------------------------------------------------------
 //-----------------------------------------------------------------------
-//   FIRST PIPE STAGE 
+//   FIRST PIPE STAGE
 //-----------------------------------------------------------------------
   if (PIPE_STAGE0 == 1) begin : first_stage_registered
   //-------------------------------------------------
@@ -51,14 +51,14 @@ module alu_dsp #(
       op1 <= i_op1;
       op2 <= i_op2;
       aluop <= i_aluop;
-    end 
+    end
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : first_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : first_registered_left_right_shifts_shared_logic
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       always_ff @(posedge clk) begin
         //swapped_op1 <= (i_aluop == SLL_OP)? reverse_bits(i_op1) : i_op1;
         swapped_op1 <= (~i_aluop[2])? reverse_bits(i_op1) : i_op1;
-      end 
+      end
     end
 
   end else begin : first_stage_not_registered
@@ -68,7 +68,7 @@ module alu_dsp #(
     assign op2 = i_op2;
     assign aluop = i_aluop;
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : first_not_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : first_not_registered_left_right_shifts_shared_logic
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       //assign swapped_op1 = (i_aluop == SLL_OP)? reverse_bits(i_op1) : i_op1;
       assign swapped_op1 = (~i_aluop[2])? reverse_bits(i_op1) : i_op1;
@@ -78,12 +78,12 @@ module alu_dsp #(
 
 
 //-----------------------------------------------------------------------
-//   SECOND PIPE STAGE 
+//   SECOND PIPE STAGE
 //-----------------------------------------------------------------------
   if (PIPE_STAGE1 == 1) begin : second_stage_registered
   //-------------------------------------------------
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : second_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : second_registered_left_right_shifts_shared_logic
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       assign temp = ($signed({(aluop[0] & swapped_op1[DWIDTH-1]),swapped_op1}) >>> shamt);
       assign temp_trim = temp [DWIDTH-1:0];
@@ -105,7 +105,7 @@ module alu_dsp #(
   end else begin : second_stage_not_registered
   //-------------------------------------------------
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : second_not_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : second_not_registered_left_right_shifts_shared_logic
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       always_comb begin
         temp = ($signed({(aluop[0] & swapped_op1[DWIDTH-1]),swapped_op1}) >>> shamt);
@@ -126,16 +126,16 @@ module alu_dsp #(
 
   end
 //-----------------------------------------------------------------------
-//   THIRD PIPE STAGE 
+//   THIRD PIPE STAGE
 //-----------------------------------------------------------------------
   if (PIPE_STAGE2 == 1) begin : third_stage_registered
   //-------------------------------------------------
-    always_ff @(posedge clk) 
+    always_ff @(posedge clk)
          o_result <= result_sll | result_dsp | result_srl_sra;
 
   end else begin : third_stage_not_registered
   //-------------------------------------------------
-    always_comb 
+    always_comb
          o_result = result_sll | result_dsp | result_srl_sra;
 
   end
@@ -334,7 +334,7 @@ DSP48E2 #(
    );
 
    // End of DSP48E2_inst instantiation
-					
+
 endmodule
 
 /* verilator lint_on PINCONNECTEMPTY */

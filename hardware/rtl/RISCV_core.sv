@@ -7,10 +7,10 @@ module RISCV_core #(
     parameter MEM_ADDR_WIDTH     = 12,
     parameter MM_ADDR_WIDTH = MEM_ADDR_WIDTH + 4,
     // RF parameter
-    parameter bool ENABLE_BRAM_REGFILE = true,
+    parameter bit ENABLE_BRAM_REGFILE = 1,
     // ALU parameter
-    parameter bool ENABLE_ALU_DSP = false ,
-    parameter bool ENABLE_UNIFIED_BARREL_SHIFTER = true,
+    parameter bit ENABLE_ALU_DSP = 0 ,
+    parameter bit ENABLE_UNIFIED_BARREL_SHIFTER = 1,
     // Generic parameters
     parameter IDcluster        = 0,
     parameter IDrow            = 0,
@@ -342,7 +342,7 @@ module RISCV_core #(
   pipe_vec #(
       .DWIDTH(32),
       .N($countones({FETCH_STAGES[3], FETCH_STAGES[4]})),
-      .WithReset(true)
+      .WithReset(1)
   ) instr_reg_inst (
       .reset(reset),
       .clk(clk),
@@ -368,7 +368,7 @@ module RISCV_core #(
   pipe_vec #(
       .DWIDTH(25),
       .N(DECODE_STAGES[0]),
-      .WithReset(true)
+      .WithReset(1)
   ) sub_instr_reg2_inst (
       .reset(reset),
       .clk(clk),
@@ -379,7 +379,7 @@ module RISCV_core #(
   pipe_vec #(
       .DWIDTH(4),
       .N(DECODE_STAGES[0]),
-      .WithReset(true)
+      .WithReset(1)
   ) immSel_reg0_inst (
       .reset(reset),
       .clk(clk),
@@ -402,7 +402,7 @@ module RISCV_core #(
   pipe_vec #(
       .DWIDTH(7),
       .N(DECODE_STAGES[0]),
-      .WithReset(true)
+      .WithReset(1)
   ) opcode_reg0_inst (
       .reset(reset),
       .clk(clk),
@@ -412,7 +412,7 @@ module RISCV_core #(
   pipe_vec #(
       .DWIDTH(3),
       .N(DECODE_STAGES[0]),
-      .WithReset(true)
+      .WithReset(1)
   ) funct3_reg0_inst (
       .reset(reset),
       .clk(clk),
@@ -422,7 +422,7 @@ module RISCV_core #(
   pipe_vec #(
       .DWIDTH(7),
       .N(DECODE_STAGES[0]),
-      .WithReset(true)
+      .WithReset(1)
   ) funct7_reg0_inst (
       .reset(reset),
       .clk(clk),
@@ -456,7 +456,7 @@ module RISCV_core #(
   pipe_vec #(
       .DWIDTH(4),
       .N(DECODE_STAGES[0]),
-      .WithReset(true)
+      .WithReset(1)
   ) ALUctrl_reg0_inst (
       .reset(reset),
       .clk(clk),
@@ -467,7 +467,7 @@ module RISCV_core #(
   //---------------------------------------------
   pipe_sl #(
       .N($countones({DECODE_STAGES[0],DECODE_STAGES[1]})),
-      .WithReset(true)
+      .WithReset(1)
   ) regfile_we_pipe_reg_inst (
       .reset(reset),
       .clk(clk),
@@ -824,8 +824,7 @@ module RISCV_core #(
   );
 
   logic [31:0] alu_result_reg_raw;
-  if (ENABLE_ALU_DSP == true) begin: alu_dsp_enabled
-  //(* keep_hierarchy = "yes" *)
+  if (ENABLE_ALU_DSP == 1) begin: alu_dsp_enabled
     alu_dsp #(
         .ALUOP_WIDTH(ALUOP_WIDTH),
         .ENABLE_UNIFIED_BARREL_SHIFTER(ENABLE_UNIFIED_BARREL_SHIFTER),
@@ -841,7 +840,6 @@ module RISCV_core #(
         .o_result(alu_result_reg_raw)
     );
   end else begin : alu_dsp_not_enabled
-  //(* keep_hierarchy = "yes" *)
     alu #(
         .ALUOP_WIDTH(ALUOP_WIDTH),
         .ENABLE_UNIFIED_BARREL_SHIFTER(ENABLE_UNIFIED_BARREL_SHIFTER),

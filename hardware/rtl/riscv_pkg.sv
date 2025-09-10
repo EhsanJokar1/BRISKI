@@ -6,11 +6,6 @@ import BRISKI_pkg::*;
 
 package riscv_pkg;
 
-  typedef enum {
-	false,
-	true
-  } bool;
-
   parameter int DWIDTH = 32;
   parameter int IWIDTH = 32;
   parameter int REGFILE_SIZE = 32;

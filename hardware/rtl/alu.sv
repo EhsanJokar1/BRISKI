@@ -1,6 +1,6 @@
 `include "riscv_pkg.sv"
 module alu #(
-    parameter bool ENABLE_UNIFIED_BARREL_SHIFTER = true,
+    parameter bit ENABLE_UNIFIED_BARREL_SHIFTER = 1,
     parameter ALUOP_WIDTH = 4,
     DWIDTH = 32,
     PIPE_STAGE0 = 0,
@@ -46,7 +46,7 @@ module alu #(
       aluop <= i_aluop;
     end
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : first_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : first_registered_left_right_shifts_shared_logic
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       always_ff @(posedge clk) begin
         swapped_op1 <= (i_aluop == SLL_OP)? reverse_bits(i_op1) : i_op1;
@@ -61,7 +61,7 @@ module alu #(
     assign op2 = i_op2;
     assign aluop = i_aluop;
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : first_not_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : first_not_registered_left_right_shifts_shared_logic
     //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       assign swapped_op1 = (i_aluop == SLL_OP)? reverse_bits(i_op1) : i_op1;
     end
@@ -83,7 +83,7 @@ module alu #(
     end
 
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : second_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : second_registered_left_right_shifts_shared_logic
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       assign temp = ($signed({(aluop[0] & swapped_op1[DWIDTH-1]),swapped_op1}) >>> shamt);
       assign temp_trim = temp [DWIDTH-1:0];
@@ -113,7 +113,7 @@ module alu #(
     end
 
 
-    if (ENABLE_UNIFIED_BARREL_SHIFTER == true) begin : second_not_registered_left_right_shifts_shared_logic
+    if (ENABLE_UNIFIED_BARREL_SHIFTER == 1) begin : second_not_registered_left_right_shifts_shared_logic
     //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       always_comb begin
         temp = ($signed({(aluop[0] & swapped_op1[DWIDTH-1]),swapped_op1}) >>> shamt);

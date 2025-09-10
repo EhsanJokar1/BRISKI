@@ -2,7 +2,7 @@
 //import riscv_pkg::*;
 module regfile_vec #(
     parameter DWIDTH = 32,
-    parameter bool ENABLE_BRAM_REGFILE = true,
+    parameter bit ENABLE_BRAM_REGFILE = 1,
     parameter NUM_THREADS = 4
 ) (
     input logic clk,
@@ -54,4 +54,3 @@ module regfile_vec #(
   );
 
 endmodule
-
